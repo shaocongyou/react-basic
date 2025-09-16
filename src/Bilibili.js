@@ -5,9 +5,30 @@ import "./Bilibili.css";
 const Bilibili = () => {
   // 一开始默认的评论
   const [comments, setComments] = useState([
-    { id: 1, author: "评论者1", content: "评论内容1", likes: 10, dislikes: 2 },
-    { id: 2, author: "评论者2", content: "评论内容2", likes: 50, dislikes: 1 },
-    { id: 3, author: "评论者3", content: "评论内容3", likes: -8, dislikes: 0 },
+    {
+      id: 1,
+      author: "评论者1",
+      content: "评论内容1",
+      likes: 10,
+      dislikes: 2,
+      date: new Date("2015-5-17"),
+    },
+    {
+      id: 2,
+      author: "评论者2",
+      content: "评论内容2",
+      likes: 50,
+      dislikes: 1,
+      date: new Date("2015-5-28"),
+    },
+    {
+      id: 3,
+      author: "评论者3",
+      content: "评论内容3",
+      likes: -8,
+      dislikes: 0,
+      date: new Date("2015-5-19"),
+    },
   ]);
 
   // 输入框的值
@@ -36,17 +57,30 @@ const Bilibili = () => {
 
   // 点赞评论的函数
   const handleLikeComment = (e, commentId) => {
-    setComments(comments.map((comment) => comment.id === commentId ? { ...comment, likes: comment.likes + 1 } : comment ));
+    setComments(
+      comments.map((comment) =>
+        comment.id === commentId
+          ? { ...comment, likes: comment.likes + 1 }
+          : comment
+      )
+    );
   };
 
   // 反对评论的函数
   const handleAgainstComment = (e, commentId) => {
-    setComments(comments.map((comment) => comment.id === commentId ? { ...comment, dislikes: comment.dislikes + 1 } : comment ));
+    setComments(
+      comments.map((comment) =>
+        comment.id === commentId
+          ? { ...comment, dislikes: comment.dislikes + 1 }
+          : comment
+      )
+    );
   };
 
   const hotComments = (comments) => {
     const sorted = bubbleSort(comments);
     setComments(sorted);
+    setWhich("热度");
   };
 
   const bubbleSort = (arr) => {
@@ -62,6 +96,15 @@ const Bilibili = () => {
     return result;
   };
 
+  const latestComments = (comments) => {
+    // 这边我希望用有名气的第三方库来实现
+    const sorted = [...comments].sort((a, b) => b.date - a.date);
+    setComments(sorted);
+    setWhich("最新");
+  };
+
+  const [which, setWhich] = useState("无");
+
   return (
     <div>
       <div className="container gap-8">
@@ -69,11 +112,15 @@ const Bilibili = () => {
           <span>评论</span>
         </strong>
         <span></span>
-        <span
-            className="span-button"
-            onClick={() => hotComments(comments)}
-        >
+        <span className={`span-button ${which === '热度' ? 'font-bold' : ''}`} onClick={() => hotComments(comments)}>
           热度
+        </span>
+        <span>|</span>
+        <span className={`span-button ${which === '最新' ? 'font-bold' : ''}`} onClick={() => latestComments(comments)}>
+          最新
+        </span>
+        <span>
+          最近点击的排序按钮：{which}
         </span>
       </div>
       <div className="div-height-10"></div>
@@ -112,6 +159,7 @@ const Bilibili = () => {
               >
                 删除
               </span>
+              <span>{comment.date.toLocaleDateString()}</span>
             </li>
           ))}
         </ul>

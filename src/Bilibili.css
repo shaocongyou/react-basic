@@ -34,3 +34,7 @@ li{
 .span-button{
     cursor: pointer;
 }
+
+.font-bold{
+    font-weight: bold;
+}
