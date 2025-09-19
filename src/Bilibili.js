@@ -2,6 +2,7 @@ import React, { useState } from "react";
 
 import "./Bilibili.css";
 
+import classNames from "classnames";
 const Bilibili = () => {
   // 一开始默认的评论
   const [comments, setComments] = useState([
@@ -112,11 +113,11 @@ const Bilibili = () => {
           <span>评论</span>
         </strong>
         <span></span>
-        <span className={`span-button ${which === '热度' ? 'font-bold' : ''}`} onClick={() => hotComments(comments)}>
+        <span className={classNames('span-button', { 'font-bold': which === '热度' })} onClick={() => hotComments(comments)}>
           热度
         </span>
         <span>|</span>
-        <span className={`span-button ${which === '最新' ? 'font-bold' : ''}`} onClick={() => latestComments(comments)}>
+        <span className={classNames('span-button', { 'font-bold': which === '最新' })} onClick={() => latestComments(comments)}>
           最新
         </span>
         <span>
