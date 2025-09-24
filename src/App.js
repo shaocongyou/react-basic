@@ -1,13 +1,23 @@
-function Son({children}) {
-    return <div>【这里是 Son  其中 children 的内容是 “{children}”】</div>;
+import {useState} from "react";
+
+function Son({GetSonMsg}) {
+    const sonMsg = "this is a sonMsg";
+    return (
+      <div>
+          <button onClick={() => GetSonMsg(sonMsg)}>send sonMsg to App</button>
+      </div>
+    );
 }
 
 function App() {
+
+    const [msgFromSon, setMsgFromSon] = useState("");
+    const getSonMsg = (sonMsg) => {setMsgFromSon(sonMsg)}
+
     return (
         <div>
-            <Son>
-                <span>这个信息出现在 props 的 children 下面</span>
-            </Son>
+            <Son GetSonMsg={getSonMsg} />
+            <span>{msgFromSon}</span>
         </div>
     );
 }
