@@ -1,14 +1,13 @@
-function Son( treasures ) {
-    // 接收更语义化的 prop
-    console.log( treasures );
-    return <div>这是先皇留下的：{treasures.treasure1}</div>;
+function Son({children}) {
+    return <div>【这里是 Son  其中 children 的内容是 “{children}”】</div>;
 }
 
 function App() {
-    const emperor = '传国玉玺'; // 更语义化的变量名
     return (
         <div>
-            <Son treasure1={emperor} />
+            <Son>
+                <span>这个信息出现在 props 的 children 下面</span>
+            </Son>
         </div>
     );
 }
