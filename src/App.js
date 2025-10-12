@@ -1,31 +1,22 @@
 import { useEffect, useState } from "react";
 
-const geekURL = "http://geek.itheima.net/v1_0/channels"
-
 function App() {
+    
+    const [count, setCount] = useState(0);
+    const [count2, setCount2] = useState(0);
 
-    const [res, setRes] = useState({});
-    const [jsonRes, setJsonRes] = useState({});
-
+    // 无依赖项
     useEffect(() => {
-        async function getList(){
-            const response = await fetch(geekURL)
-            const jsonResponse = await response.json()
-            console.log(response)
-            setRes(response)
-            console.log("--------------")
-            console.log(jsonResponse)
-            setJsonRes(jsonResponse)
-        }
-        getList()
-    },[])
+        console.log("🔵 useEffect 执行了！");
+    }, );
 
     return (
-        <div className="App">
-            <span>Json化 获取到的数据</span>
-            <div>
-                <pre>{JSON.stringify(jsonRes, null, 2)}</pre>
-            </div>
+        <div>
+            <h1>count: {count}</h1>
+            <h1>count2: {count2}</h1>
+            <button onClick={() => setCount(count + 1)}>点击 count 数值 加一</button>
+            <button onClick={() => setCount2(count2 + 1)}>点击 count2 数值加一</button>
+            <h1>打开浏览器控制台（F12），观察useEffect执行次数</h1>
         </div>
     );
 }
