@@ -5,10 +5,10 @@ function App() {
     const [count, setCount] = useState(0);
     const [count2, setCount2] = useState(0);
 
-    // 空数组依赖项
+    // 添加特定依赖项
     useEffect(() => {
         console.log("🔵 useEffect 执行了！");
-    }, []);
+    }, [count]);
 
     return (
         <div>
