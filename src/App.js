@@ -1,30 +1,29 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState } from "react"
 
-function Son() {
-    useEffect(() => {
-      console.log('Son 挂载，设置定时器');
-      
-      const timer = setInterval(() => {
-        console.log('tick - 我还在运行！DOM 在吗？', 
-          document.querySelector('.son-div'));
-      }, 1000);
-      
-      // 注释掉清理函数
-      // return () => clearInterval(timer);
-    }, []);
-    
-    return <div className="son-div">this is son</div>
-  }
-  
-  function App() {
-    const [show, setShow] = useState(true);
-    
-    return (
-      <div>
-        {show && <Son />}
-        <button onClick={() => setShow(false)}>卸载Son</button>
-      </div>
-    );
-  }
+function Son () {
+  // 1. 渲染时开启一个定时器
+  useEffect(() => {
+    const timer = setInterval(() => {
+      console.log('定时器执行中...')
+    }, 1000)
 
-export default App;
+    return () => {
+      // 清除副作用(组件卸载时)
+      clearInterval(timer)
+    }
+  }, [])
+  return <div>this is son</div>
+}
+
+function App () {
+  // 通过条件渲染模拟组件卸载
+  const [show, setShow] = useState(true)
+  return (
+    <div>
+      {show && <Son />}
+      <button onClick={() => setShow(false)}>卸载Son组件</button>
+    </div>
+  )
+}
+
+export default App
