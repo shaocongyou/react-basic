@@ -1,212 +1,215 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
-// 🎯 自定义 Hook：useCounter
-// 作用：封装计数器的所有逻辑，让它可以复用
-function useCounter(initialValue = 0) {
-    // 📊 状态：保存计数的值
-    const [count, setCount] = useState(initialValue);
-    
-    // 🔧 方法1：增加计数
-    const increment = () => setCount(count + 1);
-    // 🔧 方法2：减少计数
-    const decrement = () => setCount(count - 1);
-    // 🔧 方法3：重置计数
-    const reset = () => setCount(initialValue);
-    
-    // 📦 返回一个对象，包含：
-    // - count: 状态值（数字）
-    // - increment: 方法/函数
-    // - decrement: 方法/函数
-    // - reset: 方法/函数
-    return { 
-        count,      // 这是值
-        increment,  // 这是函数
-        decrement,  // 这是函数
-        reset       // 这是函数
-    };
+// ========================================
+// 1️⃣ 普通函数：只能处理数据，不能管理状态
+// ========================================
+function add(a, b) {
+    return a + b;  // ✅ 可以：处理数据、计算
 }
 
-// ✅ 使用自定义 Hook - 代码简洁、可复用
-function App() {
-    // 🔄 复用1：调用 useCounter 创建用户1的计数器（1行代码搞定！）
-    const counter1 = useCounter(0);
-    
-    // 🔄 复用2：调用 useCounter 创建用户2的计数器（又是1行代码！）
-    const counter2 = useCounter(0);
-    
-    // 👆 看！原本8行代码，现在只要2行！而且逻辑完全一样！
+function formatName(firstName, lastName) {
+    return `${firstName} ${lastName}`;  // ✅ 可以：格式化字符串
+}
 
-    return (
-        <div className="min-h-screen bg-gray-100 p-8">
-            <div className="max-w-4xl mx-auto bg-white rounded-lg shadow-lg p-8">
-                <h1 className="text-3xl font-bold text-green-600 mb-6 text-center">
-                    ✅ 使用自定义 Hook（代码复用）
-                </h1>
+// ❌ 普通函数不能使用 Hook！
+// function getBadCounter() {
+//     const [count, setCount] = useState(0);  // ❌ 报错！普通函数不能用 Hook
+//     return count;
+// }
 
-                {/* 说明 */}
-                <div className="bg-green-50 border-l-4 border-green-400 p-4 mb-6">
-                    <p className="text-green-800 font-semibold mb-2">
-                        🎉 优势：把相同的逻辑封装成 Hook，想用多少次就用多少次！
-                    </p>
-                    <ul className="text-green-700 text-sm list-disc list-inside">
-                        <li>用户1的计数器：1行代码 <code className="bg-green-200 px-1">const counter1 = useCounter(0);</code></li>
-                        <li>用户2的计数器：1行代码 <code className="bg-green-200 px-1">const counter2 = useCounter(0);</code></li>
-                        <li>如果有10个用户，也只是10行代码，而且一目了然！</li>
-                    </ul>
-                </div>
-
-                {/* 对比展示 */}
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
-                    {/* 不使用 Hook */}
-                    <div className="bg-red-50 rounded-lg p-4 border border-red-300">
-                        <h3 className="font-semibold text-red-700 mb-2">❌ 不使用自定义 Hook</h3>
-                        <pre className="text-xs text-red-700 overflow-x-auto">
-{`const [user1Count, setUser1Count] = useState(0);
-const user1Increment = () => setUser1Count(user1Count + 1);
-const user1Decrement = () => setUser1Count(user1Count - 1);
-const user1Reset = () => setUser1Count(0);
-
-const [user2Count, setUser2Count] = useState(0);
-const user2Increment = () => setUser2Count(user2Count + 1);
-const user2Decrement = () => setUser2Count(user2Count - 1);
-const user2Reset = () => setUser2Count(0);
-
-// 8行代码！重复！`}
-                        </pre>
-                    </div>
-
-                    {/* 使用 Hook */}
-                    <div className="bg-green-50 rounded-lg p-4 border border-green-300">
-                        <h3 className="font-semibold text-green-700 mb-2">✅ 使用自定义 Hook</h3>
-                        <pre className="text-xs text-green-700 overflow-x-auto">
-{`// 🔄 第一次使用（复用）
-const counter1 = useCounter(0);
-
-// 🔄 第二次使用（复用）
-const counter2 = useCounter(0);
-
-// 只要2行代码！
-// counter1.count → 获取值
-// counter1.increment() → 调用方法`}
-                        </pre>
-                    </div>
-                </div>
-
-                {/* 自定义 Hook 的定义 */}
-                <div className="bg-blue-50 rounded-lg p-4 mb-6">
-                    <h3 className="font-semibold text-blue-700 mb-3">📦 自定义 Hook 的定义（写一次，到处用）</h3>
-                    <pre className="text-sm text-blue-800 overflow-x-auto">
-{`function useCounter(initialValue = 0) {
-    const [count, setCount] = useState(initialValue);
+// ========================================
+// 2️⃣ 自定义 Hook：可以使用 Hook，能管理状态
+// ========================================
+function useCounter(initialValue = 0) {
+    const [count, setCount] = useState(initialValue);  // ✅ 可以用 Hook！
     
     const increment = () => setCount(count + 1);
     const decrement = () => setCount(count - 1);
     const reset = () => setCount(initialValue);
     
     return { count, increment, decrement, reset };
-}`}
-                    </pre>
-                    <p className="text-blue-700 text-sm mt-2">
-                        💡 定义好后，任何组件都可以通过 <code className="bg-blue-200 px-1">useCounter()</code> 来使用！
+}
+
+// ========================================
+// 对比演示
+// ========================================
+function App() {
+    // ✅ 使用普通函数（处理数据）
+    const sum = add(5, 3);
+    const fullName = formatName("张", "三");
+    
+    // ✅ 使用自定义 Hook（管理状态）
+    const counter = useCounter(0);
+
+    return (
+        <div className="min-h-screen bg-gray-100 p-8">
+            <div className="max-w-4xl mx-auto bg-white rounded-lg shadow-lg p-8">
+                <h1 className="text-3xl font-bold text-purple-600 mb-6 text-center">
+                    普通函数 vs 自定义 Hook
+                </h1>
+
+                {/* 说明 */}
+                <div className="bg-blue-50 border-l-4 border-blue-400 p-5 mb-6">
+                    <h2 className="text-lg font-semibold text-blue-800 mb-3">
+                        🤔 为什么有了普通函数，还需要自定义 Hook？
+                    </h2>
+                    <p className="text-blue-700 text-sm mb-2">
+                        <strong>核心原因</strong>：普通函数<strong>不能使用 Hook</strong>（useState、useEffect 等）！
+                    </p>
+                    <p className="text-blue-700 text-sm">
+                        自定义 Hook 让你可以把"<strong>带状态的逻辑</strong>"封装起来复用。
                     </p>
                 </div>
 
-                {/* 两个计数器 */}
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                    {/* 用户1 */}
-                    <div className="bg-blue-50 rounded-lg p-6 border-2 border-blue-300">
-                        <h2 className="text-xl font-bold text-blue-700 mb-4">
-                            👤 用户1的计数器
-                        </h2>
-                        <div className="text-5xl font-bold text-blue-600 mb-6 text-center">
-                            {counter1.count}
+                {/* 对比表格 */}
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+                    {/* 普通函数 */}
+                    <div className="bg-yellow-50 rounded-lg p-5 border-2 border-yellow-300">
+                        <h3 className="text-xl font-bold text-yellow-700 mb-3">
+                            📝 普通函数
+                        </h3>
+                        <div className="bg-white rounded p-3 mb-3">
+                            <pre className="text-sm text-gray-800">
+{`function add(a, b) {
+    return a + b;
+}
+
+function formatName(first, last) {
+    return \`\${first} \${last}\`;
+}`}
+                            </pre>
                         </div>
-                        <div className="flex gap-2">
-                            <button
-                                onClick={counter1.increment}
-                                className="flex-1 bg-green-500 hover:bg-green-600 text-white font-semibold py-2 rounded"
-                            >
-                                + 加一
-                            </button>
-                            <button
-                                onClick={counter1.decrement}
-                                className="flex-1 bg-orange-500 hover:bg-orange-600 text-white font-semibold py-2 rounded"
-                            >
-                                - 减一
-                            </button>
-                            <button
-                                onClick={counter1.reset}
-                                className="flex-1 bg-gray-500 hover:bg-gray-600 text-white font-semibold py-2 rounded"
-                            >
-                                重置
-                            </button>
+                        <div className="text-sm text-yellow-700 space-y-2">
+                            <p><strong>✅ 可以做：</strong></p>
+                            <ul className="list-disc list-inside ml-4">
+                                <li>处理数据</li>
+                                <li>计算结果</li>
+                                <li>格式化字符串</li>
+                            </ul>
+                            <p className="mt-3"><strong>❌ 不能做：</strong></p>
+                            <ul className="list-disc list-inside ml-4">
+                                <li>使用 useState</li>
+                                <li>使用 useEffect</li>
+                                <li>管理组件状态</li>
+                            </ul>
                         </div>
-                        <p className="text-xs text-blue-600 mt-3">
-                            使用 <code className="bg-blue-200 px-1">counter1.count</code> 和 <code className="bg-blue-200 px-1">counter1.increment()</code>
-                        </p>
+                        <div className="mt-4 bg-yellow-100 rounded p-3">
+                            <p className="text-sm text-yellow-800">
+                                <strong>演示：</strong><br/>
+                                5 + 3 = {sum}<br/>
+                                姓名：{fullName}
+                            </p>
+                        </div>
                     </div>
 
-                    {/* 用户2 */}
-                    <div className="bg-purple-50 rounded-lg p-6 border-2 border-purple-300">
-                        <h2 className="text-xl font-bold text-purple-700 mb-4">
-                            👤 用户2的计数器
-                        </h2>
-                        <div className="text-5xl font-bold text-purple-600 mb-6 text-center">
-                            {counter2.count}
+                    {/* 自定义 Hook */}
+                    <div className="bg-green-50 rounded-lg p-5 border-2 border-green-300">
+                        <h3 className="text-xl font-bold text-green-700 mb-3">
+                            🎣 自定义 Hook
+                        </h3>
+                        <div className="bg-white rounded p-3 mb-3">
+                            <pre className="text-sm text-gray-800">
+{`function useCounter(initial) {
+    const [count, setCount] = 
+        useState(initial);
+    
+    const increment = () => 
+        setCount(count + 1);
+    
+    return { count, increment };
+}`}
+                            </pre>
                         </div>
-                        <div className="flex gap-2">
-                            <button
-                                onClick={counter2.increment}
-                                className="flex-1 bg-green-500 hover:bg-green-600 text-white font-semibold py-2 rounded"
+                        <div className="text-sm text-green-700 space-y-2">
+                            <p><strong>✅ 可以做：</strong></p>
+                            <ul className="list-disc list-inside ml-4">
+                                <li>使用 useState ✨</li>
+                                <li>使用 useEffect ✨</li>
+                                <li>管理状态 ✨</li>
+                                <li>也能处理数据</li>
+                            </ul>
+                            <p className="mt-3"><strong>🎯 特点：</strong></p>
+                            <ul className="list-disc list-inside ml-4">
+                                <li>名字必须以 use 开头</li>
+                                <li>可以封装带状态的逻辑</li>
+                            </ul>
+                        </div>
+                        <div className="mt-4 bg-green-100 rounded p-3">
+                            <p className="text-sm text-green-800 mb-2">
+                                <strong>演示：</strong>
+                            </p>
+                            <div className="text-2xl font-bold text-green-700 mb-2">
+                                计数：{counter.count}
+                            </div>
+                            <button 
+                                onClick={counter.increment}
+                                className="bg-green-500 text-white px-4 py-2 rounded text-sm"
                             >
-                                + 加一
-                            </button>
-                            <button
-                                onClick={counter2.decrement}
-                                className="flex-1 bg-orange-500 hover:bg-orange-600 text-white font-semibold py-2 rounded"
-                            >
-                                - 减一
-                            </button>
-                            <button
-                                onClick={counter2.reset}
-                                className="flex-1 bg-gray-500 hover:bg-gray-600 text-white font-semibold py-2 rounded"
-                            >
-                                重置
+                                点击 +1
                             </button>
                         </div>
-                        <p className="text-xs text-purple-600 mt-3">
-                            使用 <code className="bg-purple-200 px-1">counter2.count</code> 和 <code className="bg-purple-200 px-1">counter2.increment()</code>
-                        </p>
+                    </div>
+                </div>
+
+                {/* 举例说明 */}
+                <div className="bg-purple-50 rounded-lg p-5 mb-6">
+                    <h3 className="text-lg font-semibold text-purple-700 mb-3">
+                        💡 实际场景举例
+                    </h3>
+                    <div className="space-y-3 text-sm text-purple-700">
+                        <div className="bg-white rounded p-3">
+                            <p className="font-semibold mb-1">场景1：格式化价格</p>
+                            <p className="text-xs text-gray-600 mb-2">只是数据处理，没有状态 → 用<strong>普通函数</strong></p>
+                            <code className="text-xs bg-purple-100 px-2 py-1 rounded">
+                                function formatPrice(price) {'{'} return `¥${'${price}'}`;  {'}'}
+                            </code>
+                        </div>
+
+                        <div className="bg-white rounded p-3">
+                            <p className="font-semibold mb-1">场景2：倒计时功能</p>
+                            <p className="text-xs text-gray-600 mb-2">需要状态 + 定时器 → 必须用<strong>自定义 Hook</strong></p>
+                            <code className="text-xs bg-purple-100 px-2 py-1 rounded block">
+                                function useCountdown(seconds) {'{'}<br/>
+                                &nbsp;&nbsp;const [time, setTime] = useState(seconds);<br/>
+                                &nbsp;&nbsp;useEffect(() =&gt; {'{ /* 定时器逻辑 */ }'});<br/>
+                                &nbsp;&nbsp;return time;<br/>
+                                {'}'}
+                            </code>
+                        </div>
+
+                        <div className="bg-white rounded p-3">
+                            <p className="font-semibold mb-1">场景3：获取用户输入</p>
+                            <p className="text-xs text-gray-600 mb-2">需要管理输入状态 → 必须用<strong>自定义 Hook</strong></p>
+                            <code className="text-xs bg-purple-100 px-2 py-1 rounded block">
+                                function useInput(initialValue) {'{'}<br/>
+                                &nbsp;&nbsp;const [value, setValue] = useState(initialValue);<br/>
+                                &nbsp;&nbsp;return [value, setValue];<br/>
+                                {'}'}
+                            </code>
+                        </div>
                     </div>
                 </div>
 
                 {/* 总结 */}
-                <div className="mt-6 bg-green-50 border border-green-300 rounded-lg p-4">
-                    <p className="text-green-800 font-semibold mb-2">
-                        ✅ 自定义 Hook 的好处：
-                    </p>
-                    <ul className="text-green-700 text-sm space-y-1 list-disc list-inside">
-                        <li><strong>🔄 复用逻辑</strong>：useCounter 写一次，可以用无数次</li>
-                        <li><strong>📝 代码简洁</strong>：从8行代码减少到2行代码</li>
-                        <li><strong>🛠️ 易于维护</strong>：修改 useCounter 的逻辑，所有使用的地方自动更新</li>
-                        <li><strong>🏷️ 语义清晰</strong>：useCounter 一看就知道是计数器</li>
-                        <li><strong>🎯 独立测试</strong>：可以单独测试 useCounter 的功能</li>
-                    </ul>
-                </div>
-
-                {/* 关键点 */}
-                <div className="mt-4 bg-yellow-50 border-l-4 border-yellow-400 p-4">
-                    <p className="text-yellow-800 font-semibold mb-2">
-                        🔑 关键理解：
-                    </p>
-                    <p className="text-yellow-700 text-sm">
-                        <strong>复用的含义</strong>：就像工具箱里的工具，你做了一个扳手（useCounter），
-                        需要用的时候就拿出来用，不用每次都重新造一个扳手。
-                        <code className="bg-yellow-200 px-1 mx-1">const counter1 = useCounter(0)</code> 
-                        就是"拿出扳手用一次"，
-                        <code className="bg-yellow-200 px-1 mx-1">const counter2 = useCounter(0)</code> 
-                        就是"再拿出扳手用一次"！
-                    </p>
+                <div className="bg-gradient-to-r from-blue-50 to-purple-50 rounded-lg p-5 border-2 border-blue-300">
+                    <h3 className="text-lg font-semibold text-blue-800 mb-3">
+                        🎯 简单总结
+                    </h3>
+                    <div className="space-y-2 text-sm text-gray-700">
+                        <p>
+                            <strong className="text-yellow-700">普通函数</strong>：
+                            只能处理数据，不能用 Hook，<strong>没有状态</strong>
+                        </p>
+                        <p>
+                            <strong className="text-green-700">自定义 Hook</strong>：
+                            可以用 Hook（useState、useEffect），<strong>能管理状态</strong>
+                        </p>
+                        <p className="mt-4 p-3 bg-yellow-100 rounded">
+                            💡 <strong>记忆口诀</strong>：<br/>
+                            <span className="ml-4">需要状态？用 Hook！</span><br/>
+                            <span className="ml-4">只是计算？普通函数够了！</span>
+                        </p>
+                    </div>
                 </div>
             </div>
         </div>
